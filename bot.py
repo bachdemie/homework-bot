@@ -176,6 +176,16 @@ async def link_here_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         f"{name} — user {user_id} → Topic #{topic_id}"
     )
 
+async def myid_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not update.message or not update.effective_user:
+        return
+
+    user = update.effective_user
+
+    await update.message.reply_text(
+        f"Deine Telegram User-ID ist:\n{user.id}"
+    )
+
 async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Drop the student's stored topic so a fresh one is created on the next message."""
     if not update.message or not update.effective_user:
@@ -302,6 +312,7 @@ def build_app(token: str) -> ApplicationBuilder:
     app.add_handler(CommandHandler("reset", reset))
     app.add_handler(CommandHandler("students", students_cmd))
     app.add_handler(CommandHandler("link_here", link_here_cmd))
+    app.add_handler(CommandHandler("myid", myid_cmd))
     app.add_handler(
         MessageHandler(filters.ChatType.PRIVATE & ~filters.COMMAND, handle_message)
     )
