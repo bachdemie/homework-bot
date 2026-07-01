@@ -128,6 +128,53 @@ async def students_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     for i in range(0, len(text), 3500):
         await update.message.reply_text(text[i:i + 3500])
 
+async def link_here_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Link a student user_id to the current forum topic."""
+    if not update.message or not update.effective_chat:
+        return
+
+    # Nur in der Lehrer-Gruppe erlauben
+    if update.effective_chat.id != GROUP_ID:
+        await update.message.reply_text(
+            "Dieser Befehl funktioniert nur in der Lehrer-Gruppe."
+        )
+        return
+
+    # Der Befehl muss in einem Thema/Topic geschrieben werden
+    topic_id = update.message.message_thread_id
+    if not topic_id:
+        await update.message.reply_text(
+            "Bitte diesen Befehl direkt im vorhandenen Schüler-Thema ausführen."
+        )
+        return
+
+    if not context.args:
+        await update.message.reply_text(
+            "Bitte so nutzen:\n"
+            "/link_here USER_ID Name\n\n"
+            "Beispiel:\n"
+            "/link_here 123456789 Max"
+        )
+        return
+
+    try:
+        user_id = int(context.args[0])
+    except ValueError:
+        await update.message.reply_text("Die USER_ID muss eine Zahl sein.")
+        return
+
+    name = " ".join(context.args[1:]).strip() or "Unbenannt"
+
+    db.execute(
+        "INSERT OR REPLACE INTO students (user_id, name, topic_id) VALUES (?, ?, ?)",
+        (user_id, name, topic_id),
+    )
+    db.commit()
+
+    await update.message.reply_text(
+        f"✅ Verknüpft:\n"
+        f"{name} — user {user_id} → Topic #{topic_id}"
+    )
 
 async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Drop the student's stored topic so a fresh one is created on the next message."""
@@ -254,6 +301,7 @@ def build_app(token: str) -> ApplicationBuilder:
     app.add_handler(CommandHandler("status", status))
     app.add_handler(CommandHandler("reset", reset))
     app.add_handler(CommandHandler("students", students_cmd))
+    app.add_handler(CommandHandler("link_here", link_here_cmd))
     app.add_handler(
         MessageHandler(filters.ChatType.PRIVATE & ~filters.COMMAND, handle_message)
     )
