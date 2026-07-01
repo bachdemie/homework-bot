@@ -23,7 +23,8 @@ logger = logging.getLogger(__name__)
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN") or os.getenv("BOT_TOKEN")
 GROUP_ID = int(os.getenv("TEACHER_GROUP_ID", "-1003839598400"))
 
-DB_PATH = Path(__file__).parent / "students.db"
+DB_PATH = Path(os.getenv("DB_PATH", "/var/data/students.db"))
+DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 db = sqlite3.connect(DB_PATH, check_same_thread=False)
 db.execute(
@@ -266,6 +267,7 @@ def main() -> None:
             "TELEGRAM_BOT_TOKEN is not set. Add it as a Replit secret and restart."
         )
 
+    logger.info("Database path: %s", DB_PATH.resolve())
     logger.info("Starting Homework Submission Bot. Teacher group: %s", GROUP_ID)
 
     retry_delay = 5
