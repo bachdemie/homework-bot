@@ -25,7 +25,7 @@ GROUP_ID_1 = int(os.getenv("TEACHER_GROUP_ID", "-1003839598400"))
 DB_PATH_1 = Path(os.getenv("DB_PATH", "/var/data/students.db"))
 
 TOKEN_2 = os.getenv("TELEGRAM_BOT_TOKEN_2")
-GROUP_ID_2 = int(os.getenv("TEACHER_GROUP_ID_2", "-5516510250"))
+GROUP_ID_2 = int(os.getenv("TEACHER_GROUP_ID_2", "-1004319299799"))
 DB_PATH_2 = Path(os.getenv("DB_PATH_2", "/var/data/students_bot2.db"))
 
 
