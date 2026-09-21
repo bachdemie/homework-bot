@@ -10,5 +10,5 @@ services:
       - key: TELEGRAM_BOT_TOKEN_2
         sync: false
       - key: TEACHER_GROUP_ID_2
-        value: "-5516510250"
+        value: "-1004319299799"
 
